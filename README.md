@@ -7,7 +7,7 @@ Vamos implementar uma aplicação para consultar o valor médio de veículos (ca
 - A consulta aos valores dos veículos pelo site tem o seguinte fluxo:
 - Primeiramente é necessário escolher o tipo do veículo: carro, moto ou caminhão.
 
-![image](https://github.com/jacqueline-oliveira/3257-java-desafio/assets/66698429/c64bc1d1-2957-4bca-9965-0ce2bf9a6207)
+![image](https://github.com/user-attachments/assets/69398006-5b7d-4be4-8187-4aaa1141467f)
 
 
 - Depois disso, é necessário preencher a MARCA, MODELO e ANO para consulta.
