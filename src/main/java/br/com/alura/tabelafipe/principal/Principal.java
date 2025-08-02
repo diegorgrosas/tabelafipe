@@ -2,12 +2,15 @@ package br.com.alura.tabelafipe.principal;
 
 import br.com.alura.tabelafipe.model.DadosGerais;
 import br.com.alura.tabelafipe.model.DadosModelos;
+import br.com.alura.tabelafipe.model.Veiculo;
 import br.com.alura.tabelafipe.service.ConsumoApi;
 import br.com.alura.tabelafipe.service.ConverteDados;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner leitura = new Scanner(System.in);
@@ -18,12 +21,12 @@ public class Principal {
 
     public void exibeMenu() {
         menu();
-        var veiculo = leitura.nextLine();
+        var opcao = leitura.nextLine();
         String endereco;
 
-        if (veiculo.toLowerCase().contains("car")) {
+        if (opcao.toLowerCase().contains("car")) {
             endereco = URL_BASE + "carros/marcas";
-        } else if (veiculo.toLowerCase().contains("mo")) {
+        } else if (opcao.toLowerCase().contains("mo")) {
             endereco = URL_BASE + "motos/marcas";
         } else {
             endereco = URL_BASE + "caminhoes/marcas";
@@ -32,14 +35,14 @@ public class Principal {
         var json = consumo.obterDados(endereco);
         System.out.println("\n" + json);
 
-		var marcas = conversor.obterLista(json, DadosGerais.class);
+        var marcas = conversor.obterLista(json, DadosGerais.class);
 
         marcas.stream()
                 .forEach(dado -> System.out.println("Cód: " + dado.codigo() + "  Descrição: " + dado.nome()));
 
 
         System.out.print("\nDigite o código da marca para consulta: ");
-		var codigoMarca = leitura.nextLine();
+        var codigoMarca = leitura.nextLine();
 
         endereco = endereco + "/" + codigoMarca + "/modelos";
 
@@ -50,31 +53,40 @@ public class Principal {
         modeloLista.modelos().stream()
                 .forEach(dado -> System.out.println("Cód: " + dado.codigo() + "  Descrição: " + dado.nome()));
 
+        System.out.print("\nDigite um trecho do nome do veículo a ser buscado: ");
+        var nomeVeiculo = leitura.nextLine();
 
-        System.out.print("\nDigite o código da modelo para consultar valores: ");
+        List<DadosGerais> modelosFiltrados = modeloLista.modelos().stream()
+                .filter(m -> m.nome().toLowerCase().contains(nomeVeiculo.toLowerCase()))
+                .collect(Collectors.toList());
+
+        System.out.println("\nModelos filtrados: ");
+        modelosFiltrados.forEach(dado ->
+                System.out.println("Cód: " + dado.codigo() + "  Descrição: " + dado.nome()));
+
+
+        System.out.print("\nDigite o código da modelo para consultar os valores: ");
         var codigoModelo = leitura.nextLine();
 
-        endereco = endereco + "/" + codigoModelo + "/anos" ; // + id ex. 2014-3
-        System.out.println(endereco);
+        endereco = endereco + "/" + codigoModelo + "/anos"; // + id ex. 2014-3
+//        System.out.println(endereco);
         json = consumo.obterDados(endereco);
-        System.out.println(json);
+//        System.out.println(json);
 
-        var modelos = conversor.obterLista(json, DadosGerais.class);
-        modelos.stream()
-                .forEach(dado -> System.out.println("Cód: " + dado.codigo() + "  Descrição: " + dado.nome()));
+        List<DadosGerais> anos = conversor.obterLista(json, DadosGerais.class);
+//        anos.stream()
+//                .forEach(dado -> System.out.println("Cód: " + dado.codigo() + "  Descrição: " + dado.nome()));
+//    }
+        List<Veiculo> veiculos = new ArrayList<>();
+        for (int i = 0; i < anos.size(); i++) {
+            var enderecoAnos = endereco + "/" + anos.get(i).codigo();
+            json = consumo.obterDados(enderecoAnos);
+            Veiculo veiculo = conversor.obterDados(json, Veiculo.class);
+            veiculos.add(veiculo);
+        }
+        System.out.println("\nTodos os veículos filtrados com avaliações por ano: ");
+        veiculos.forEach(System.out::println);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
